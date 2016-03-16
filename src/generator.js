@@ -57,69 +57,7 @@ function processOutSync(template, out, wd) {
   );
 }
 
-
-const doc =
-`
-Replaces placeholders of the form <!-- @@path/to/file.js --> with the contents
-of the refernced file. Paths are resolved relative to the input file or the
-current working directory in the case of stdin.
-
-Usage:
-  generate [<input>] [(--output <file> | --stdout)] [--validate]
-  generate <input> --output <file> [--watch <dir>] [--validate]
-  generate [--help]
-
-Options:
-  <input>                        Input file
-  -o <file>, --output <file>     Send output to a file
-  --stdout                       Send to standard out
-  -v, --validate                 Validate
-  --watch <dir>                  Watch a directory
-  -h, --help                     Help
-
-`;
-
-const opts = require('docopt').docopt(doc);
-// console.dir(opts);
-// process.exit(1);
-
-const cwd = process.cwd();
-
-let outputStream = process.stdout;
-let outputPath = null;
-if(opts['--output']) {
-  outputStream = fs.createWriteStream(path.resolve(cwd, opts['--output']));
-  outputPath = path.resolve(cwd, opts['--output'])
-}
-
-let inputStream = process.stdin;
-// Use the current working directory, not the script location
-// to resolve relative paths in the template if input is stdin (default)
-let wd = cwd;
-if(opts['<input>']) {
-  inputStream = fs.createReadStream(path.resolve(cwd, opts['<input>']));
-  wd = path.dirname(path.resolve(cwd, opts['<input>']));
-}
-
-readInput(inputStream)
-  .then(input => processOutSync(input, outputStream, wd))
-  .catch(function(err) {
-    console.error('Unhandled error: %s', err);
-    process.exit(1);
-  });
-
-if(opts['--watch']) {
-  const watch = require('node-watch');
-  watch(path.resolve(cwd, opts['--watch']), function(filename) {
-    if(filename !== outputPath) {
-      console.log(`Detected change to ${path.relative(cwd, filename)} ➞  Updating ${path.relative(cwd, outputPath)}`);
-      readInput(inputStream)
-        .then(input => processOutSync(input, outputStream, wd))
-        .catch(function(err) {
-          console.error('Unhandled error: %s', err);
-          process.exit(1);
-        });
-    }
-  });
-  console.log(`Watching ${path.resolve(cwd, opts['--watch'])}…`);
+module.exports = {
+  readInput: readInput,
+  processOutSync: processOutSync
 }
