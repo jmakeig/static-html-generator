@@ -1,0 +1,36 @@
+{
+  "name": "static-html-generator",
+  "version": "0.0.1",
+  "description": "",
+  "main": "generate",
+  "scripts": {
+    "test": "tape test/*.test.js | tap-diff"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jmakeig/static-html-generator.git"
+  },
+  "author": "Justin Makeig <jmakeig@marklogic.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/jmakeig/static-html-generator/issues"
+  },
+  "homepage": "https://github.com/jmakeig/static-html-generator#readme",
+  "dependencies": {
+    "docopt": "^0.6.2",
+    "eslint": "^1.10.3",
+    "isomorphic-fetch": "^2.2.1",
+    "node-watch": "^0.3.5",
+    "xpath.js": "^1.0.6"
+  },
+  "devDependencies": {
+    "tap-diff": "^0.1.1",
+    "tap-notify": "^0.0.3",
+    "tap-spec": "^4.1.1",
+    "tape": "^4.4.0",
+    "tape-catch": "^1.0.4"
+  },
+  "bin": {
+    "generate": "generate"
+  }
+}
