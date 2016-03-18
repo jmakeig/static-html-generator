@@ -48,6 +48,9 @@ function readInput(readStream) {
 
 // TODO: Get file should cache, in the case of workspaces
 const getFileSync = (function(resolvedPath, selector, encoding) {
+  // FIXME: This won't work in a watch situation where the process
+  // stays running. There's no way to invalidate the cache with updated
+  // source files.
   const cache = {};
   return function(resolvedPath, selector, encoding) {
     let cached = cache[`${resolvedPath}`];
@@ -73,7 +76,6 @@ const getFileSync = (function(resolvedPath, selector, encoding) {
     }
   }
 })();
-
 
 /**
  * Processes the template contents synchronously
