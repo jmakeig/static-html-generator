@@ -2,8 +2,34 @@
 const fs = require('fs');
 const path = require('path');
 
+const xpath = require('xpath');
+const dom = require('xmldom').DOMParser;
+
+const string = require('./string.js');
+
 const INCLUDE = '<!-- @@(.+) -->'; // Optionally surround path with quotes too
+const SELECTOR = '#';
 const encoding = {encoding: 'utf8' };
+
+class SelectorError extends Error {
+  constructor(path, fileName, xml) {
+    super();
+
+    this.path = path;
+    this.fileName = fileName;
+    this.xml = xml;
+
+    Error.captureStackTrace(this);
+  }
+  get name() {
+    return 'SelectorError';
+  }
+  get message() {
+    return `No match at ${this.path} in ${this.fileName}.`;
+  }
+}
+
+// function parseInclude()
 
 /**
  * Reads the input stream as UTF-8 text.
@@ -20,6 +46,33 @@ function readInput(readStream) {
   })
 }
 
+// TODO: Get file should cache, in the case of workspaces
+const getFileSync = (function(resolvedPath, selector, encoding) {
+  const cache = {};
+  return function(resolvedPath, selector, encoding) {
+    let cached = cache[`${resolvedPath}`];
+    if(cached && !selector) {
+      return cached;
+    }
+    let fileContents = fs.readFileSync(resolvedPath, encoding);
+    if(selector) {
+      const workspace = new dom().parseFromString(fileContents);
+      // Cache DOM, not just string. This means that you can’t include an entire workspace.
+      cache[resolvedPath] = workspace;
+      const matcher = `/export/workspace/query[@name = "${selector}"]`;
+      const nodes = xpath.select(matcher, workspace);
+      if(!nodes.length) {
+        throw new SelectorError(matcher, resolvedPath, fileContents);
+      }
+      return nodes[0].firstChild.data;
+    } else {
+      cache[resolvedPath] = fileContents;
+      return fileContents;
+    }
+  }
+})();
+
+
 /**
  * Processes the template contents synchronously
  *   1. finds the include directives
@@ -33,25 +86,19 @@ function readInput(readStream) {
  * @return [undefined]
  */
 function processOutSync(template, out, wd) {
-  function stripQuotes(str) {
-    return str.replace(/^"/, '')
-              .replace(/"$/, '');
-  }
   out.write(
     template.replace(new RegExp(INCLUDE, 'g'),
-      (match, file) => {
+      (match, include) => {
+        const parts = include.split(SELECTOR);
+        const file = parts[0];
+        const selector = parts[1]; // undefined if no selector
+
         // Resolves included paths relative to the template
-        const resolvedPath = path.resolve(wd, stripQuotes(file));
-        try {
-          let fileContents = fs.readFileSync(resolvedPath, encoding);
-          return fileContents
-                  // TODO: Assumes HTML encoding
-                   .replace(/\&/g, '&amp;')
-                   .replace(/</g, '&lt;');
-        } catch(err) {
-          process.stderr.write(`Could not include ${match} becuase the file, '${resolvedPath}', resolved relative to '${wd}', could not be opened.\n`);
-          process.exit(1);
-        }
+        const resolvedPath = path.resolve(wd, string.stripLeadingTrailingQuotes(file));
+        let fileContents = getFileSync(resolvedPath, selector, encoding);
+        return fileContents
+           .replace(/\&/g, '&amp;')
+           .replace(/</g, '&lt;');
       }
     )
   );
@@ -59,5 +106,6 @@ function processOutSync(template, out, wd) {
 
 module.exports = {
   readInput: readInput,
-  processOutSync: processOutSync
+  processOutSync: processOutSync,
+  SelectorError: SelectorError
 }

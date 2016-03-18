@@ -51,7 +51,7 @@ if(opts['<input>']) {
 generator.readInput(inputStream)
   .then(input => generator.processOutSync(input, outputStream, wd))
   .catch(function(err) {
-    console.error('Unhandled error: %s', err);
+    console.error('Unhandled error: %s', err.message);
     process.exit(1);
   });
 
