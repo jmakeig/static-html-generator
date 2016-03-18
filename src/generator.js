@@ -56,9 +56,11 @@ const getFileSync = (function(resolvedPath, selector, encoding) {
     }
     let fileContents = fs.readFileSync(resolvedPath, encoding);
     if(selector) {
-      const workspace = new dom().parseFromString(fileContents);
-      // Cache DOM, not just string. This means that you can’t include an entire workspace.
-      cache[resolvedPath] = workspace;
+      let workspace = cached;
+      if(!workspace) {
+        // Cache DOM, not just string. This means that you can’t include an entire workspace.
+        cache[`${resolvedPath}`] = workspace = new dom().parseFromString(fileContents);
+      }
       const matcher = `/export/workspace/query[@name = "${selector}"]`;
       const nodes = xpath.select(matcher, workspace);
       if(!nodes.length) {

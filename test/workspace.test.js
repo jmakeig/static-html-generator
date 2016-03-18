@@ -56,3 +56,18 @@ test('Multiple workspaces', assert => {
     'Total lines across template and two examples');
   assert.end();
 });
+
+test('Many workspaces', assert => {
+  const ITERATIONS = 100;
+  let input = '';
+  for(let i = 0; i < ITERATIONS; i++) {
+    input += '<!-- @@workspace.xml#Query 7 -->\r';
+  }
+  const output = new MockSyncWritableStream();
+  generator.processOutSync(input, output, path.resolve(process.cwd(), './test'));
+  const lines = output.buffer.split(/[\r\n]/);
+  assert.equals(lines.length,
+    ITERATIONS * 4 + 1 /* trailing line break */,
+    `Sum of ${ITERATIONS} iterations`);
+  assert.end();
+});
