@@ -12,7 +12,8 @@ echo 'Validating generated HTML…'
 # Validate output HTML
 curl -H "Content-Type: text/html; charset=utf-8" \
   --data-binary @"$OUT" \
-  https://validator.w3.org/nu/?out=gnu
+  https://validator.w3.org/nu/?out=gnu \
+&& echo -ne "\033[32;1m✔\033[0m  Validated HTML in $OUT\n"
 
 # Copyright 2011 Yu-Jie Lin
 # New BSD License
