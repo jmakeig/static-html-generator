@@ -10,10 +10,19 @@ if [ -r $1 ]; then
 
 echo 'Validating generated HTML…'
 # Validate output HTML
-curl -H "Content-Type: text/html; charset=utf-8" \
+response=$( \
+curl -s -H "Content-Type: text/html; charset=utf-8" \
   --data-binary @"$OUT" \
   https://validator.w3.org/nu/?out=gnu \
-&& echo -ne "\033[32;1m✔\033[0m  Validated HTML in $OUT\n"
+)
+
+if [[ -z $response ]] ; then
+  echo -ne "\033[32;1m✔\033[0m  Validated HTML in $OUT\n"
+else
+  echo -ne "\033[31;1m✘\033[0m  $OUT is invalid\n"
+  echo "$response"
+fi
+
 
 # Copyright 2011 Yu-Jie Lin
 # New BSD License
