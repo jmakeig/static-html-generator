@@ -35,6 +35,7 @@
     "tape-catch": "^1.0.4"
   },
   "bin": {
-    "generate": "./generate"
+    "generate": "./generate",
+    "validate": "./validate.sh"
   }
 }
