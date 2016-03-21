@@ -68,7 +68,8 @@ $CWD/examples/*.sjs \
   --rule 'no-unused-expressions: [0]' \
   --rule 'global-strict: [0]' \
   --rule 'no-trailing-spaces: [0]' \
-  --rule 'yoda: [2, always, { exceptRange: true }]'
+  --rule 'yoda: [2, always, { exceptRange: true }]' \
+&& echo -ne "\033[32;1m✔\033[0m  Validated examples/*.[s]js\n"
 # --debug
 
 fi
