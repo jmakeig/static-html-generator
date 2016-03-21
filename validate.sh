@@ -4,8 +4,7 @@
 #
 
 OUT="$1"
-
-echo $(dirname $1)
+CWD="$(pwd)"
 
 if [ -r $1 ]; then
 
@@ -59,7 +58,7 @@ done
 echo 'Validating examples…'
 
 $(npm bin)"/eslint" \
-examples/*.sjs \
+$CWD/examples/*.sjs \
   --no-eslintrc \
   --ext .js \
   --ext .sjs \
