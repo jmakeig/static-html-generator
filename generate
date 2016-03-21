@@ -8,7 +8,7 @@ const generator = require('./src/generator.js');
 const doc =
 `
 Replaces placeholders of the form <!-- @@path/to/file.js --> with the contents
-of the refernced file. Paths are resolved relative to the input file or the
+of the referenced file. Paths are resolved relative to the input file or the
 current working directory in the case of stdin.
 
 Usage:
