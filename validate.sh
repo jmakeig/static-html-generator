@@ -27,7 +27,7 @@ curl -H "Content-Type: text/html; charset=utf-8" \
 # which looks to be OS X-specific.
 
 echo 'Checking links…'
-xmllint --shell --html "$OUT" <<<"cat //a[starts-with(@href,'http')]" | egrep -o 'https?:[^"]*' | sort | uniq | head -1 |
+xmllint --shell --html "$OUT" <<<"cat //a[starts-with(@href,'http')]" | egrep -o 'https?:[^"]*' | sort | uniq | # head -1 |
 while read url; do
 	# curl: -s silent, -I header only, -L follow Location, -m 10 sec timeout, -w output format
 	read resp_code eff_url <<<"$(curl -s -I -L -m 10 -w '%{http_code} %{url_effective}\n' "$url" | sed '$q;d')"
