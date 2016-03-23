@@ -18,9 +18,6 @@
   "homepage": "https://github.com/jmakeig/static-html-generator#readme",
   "dependencies": {
     "docopt": "^0.6.2",
-    "eslint": "^1.10.3",
-    "isomorphic-fetch": "^2.2.1",
-    "node-watch": "^0.3.5",
     "xmldom": "^0.1.22",
     "xpath": "^0.0.22"
   },
